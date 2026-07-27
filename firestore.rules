@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users
+    match /users/{uid} {
+      allow read, write: if true;
+    }
+
+    // Feature flags (both snake_case and camelCase)
+    match /feature_flags/{flagId} {
+      allow read, write: if true;
+    }
+    match /featureFlags/{flagId} {
+      allow read, write: if true;
+    }
+
+    // App config
+    match /appConfig/{docId} {
+      allow read, write: if true;
+    }
+
+    // API keys (both snake_case and camelCase)
+    match /api_keys/{keyId} {
+      allow read, write: if true;
+    }
+    match /apiKeys/{keyId} {
+      allow read, write: if true;
+    }
+
+    // Comments
+    match /comments/{commentId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Ratings aggregate
+    match /ratings/{docId=**} {
+      allow read, write: if true;
+    }
+  }
+}

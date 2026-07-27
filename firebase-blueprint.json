@@ -1,0 +1,71 @@
+{
+  "entities": {
+    "users": {
+      "title": "Users",
+      "description": "User profiles and preferences",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string" },
+        "plan": { "type": "string" },
+        "savedLocations": { "type": "array" },
+        "preferences": { "type": "object" },
+        "createdAt": { "type": "string" },
+        "lastLoginAt": { "type": "string" }
+      }
+    },
+    "featureFlags": {
+      "title": "Feature Flags",
+      "description": "Platform feature toggles",
+      "properties": {
+        "name": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "description": { "type": "string" },
+        "scope": { "type": "string" }
+      }
+    },
+    "appConfig": {
+      "title": "App Config",
+      "description": "Global application configuration",
+      "properties": {
+        "openMeteoEnabled": { "type": "boolean" },
+        "openWeatherMapEnabled": { "type": "boolean" },
+        "weatherApiComEnabled": { "type": "boolean" },
+        "tomorrowIoEnabled": { "type": "boolean" },
+        "visualCrossingEnabled": { "type": "boolean" },
+        "rainviewerEnabled": { "type": "boolean" },
+        "nwsEnabled": { "type": "boolean" }
+      }
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "description": "Weather API provider keys and load balancer settings",
+      "properties": {
+        "provider": { "type": "string" },
+        "label": { "type": "string" },
+        "key": { "type": "string" },
+        "dailyLimit": { "type": "number" },
+        "callsToday": { "type": "number" },
+        "resetAt": { "type": "string" },
+        "status": { "type": "string" },
+        "priority": { "type": "number" }
+      }
+    },
+    "comments": {
+      "title": "Comments",
+      "description": "User comments and ratings",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhotoURL": { "type": "string" },
+        "pageUrl": { "type": "string" },
+        "rating": { "type": "number" },
+        "text": { "type": "string" },
+        "status": { "type": "string" },
+        "hasLinks": { "type": "boolean" },
+        "detectedLinks": { "type": "array" }
+      }
+    }
+  }
+}
