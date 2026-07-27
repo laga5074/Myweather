@@ -82,28 +82,36 @@ export default function NotificationSettings({
 
   // Check browser Notification permission on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      setBrowserPermission(Notification.permission);
-      setPermissionSupported(true);
-    } else {
-      setPermissionSupported(false);
-    }
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        setBrowserPermission(Notification.permission);
+        setPermissionSupported(true);
+      } else {
+        setPermissionSupported(false);
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   // Sync saved locations into locationSettings
   useEffect(() => {
-    setPrefs((prev) => {
-      const updatedLocations = { ...prev.locationSettings };
-      savedLocations.forEach((loc) => {
-        if (!updatedLocations[loc.name]) {
-          updatedLocations[loc.name] = {
-            enabled: true,
-            severityThreshold: 'all',
-          };
-        }
+    const timer = setTimeout(() => {
+      setPrefs((prev) => {
+        const updatedLocations = { ...prev.locationSettings };
+        let changed = false;
+        savedLocations.forEach((loc) => {
+          if (!updatedLocations[loc.name]) {
+            updatedLocations[loc.name] = {
+              enabled: true,
+              severityThreshold: 'all',
+            };
+            changed = true;
+          }
+        });
+        return changed ? { ...prev, locationSettings: updatedLocations } : prev;
       });
-      return { ...prev, locationSettings: updatedLocations };
-    });
+    }, 0);
+    return () => clearTimeout(timer);
   }, [savedLocations]);
 
   // Load from Firestore if user is authenticated

@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element */
 
 import React, { useState, useEffect } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Layers, Maximize2, RefreshCw, Eye } from 'lucide-react';

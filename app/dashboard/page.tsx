@@ -8,7 +8,7 @@ import CurrentConditions from '../../components/weather/CurrentConditions';
 import NotificationSettings from '../../components/dashboard/NotificationSettings';
 import { auth, db } from '../../lib/firebase/client';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { MapPin, Plus, Trash2, Settings, ShieldCheck, Sparkles, RefreshCw, Key, Bell, LayoutDashboard } from 'lucide-react';
+import { MapPin, Plus, Trash2, Settings, ShieldCheck, Sparkles, RefreshCw, Bell, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -29,15 +29,43 @@ export default function DashboardPage() {
 
   const [weatherData, setWeatherData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [customKey, setCustomKey] = useState<string>('');
-  const [keySaved, setKeySaved] = useState<boolean>(false);
 
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged((u) => {
+    const unsub = auth.onAuthStateChanged(async (u) => {
       setUser(u);
+      if (u) {
+        try {
+          const userRef = doc(db, 'users', u.uid);
+          const snap = await getDoc(userRef);
+          if (snap.exists()) {
+            const data = snap.data();
+            if (data.savedLocations && Array.isArray(data.savedLocations) && data.savedLocations.length > 0) {
+              setSavedLocations(data.savedLocations);
+              setSelectedLoc(data.savedLocations[0]);
+            } else {
+              await setDoc(userRef, { savedLocations }, { merge: true });
+            }
+          } else {
+            await setDoc(userRef, { savedLocations, email: u.email, displayName: u.displayName || 'User' }, { merge: true });
+          }
+        } catch (e) {
+          console.error('Error loading saved locations from Firestore:', e);
+        }
+      }
     });
     return () => unsub();
   }, []);
+
+  const saveLocationsToFirestore = async (newLocations: Array<{ name: string; lat: number; lon: number; country: string }>) => {
+    const u = auth.currentUser;
+    if (!u) return;
+    try {
+      const userRef = doc(db, 'users', u.uid);
+      await setDoc(userRef, { savedLocations: newLocations }, { merge: true });
+    } catch (e) {
+      console.error('Error saving locations to Firestore:', e);
+    }
+  };
 
   const loadWeather = async (lat: number, lon: number, name: string, cntry: string) => {
     setLoading(true);
@@ -77,15 +105,18 @@ export default function DashboardPage() {
   }, [selectedLoc]);
 
   const handleAddLocation = (loc: { lat: number; lon: number; name: string; country: string }) => {
-    if (!savedLocations.some((s) => s.name === loc.name)) {
-      setSavedLocations([...savedLocations, loc]);
+    if (!savedLocations.some((s) => s.name.toLowerCase() === loc.name.toLowerCase())) {
+      const updated = [...savedLocations, loc];
+      setSavedLocations(updated);
+      saveLocationsToFirestore(updated);
     }
     setSelectedLoc(loc);
   };
 
   const handleRemoveLocation = (name: string) => {
-    const filtered = savedLocations.filter((s) => s.name !== name);
+    const filtered = savedLocations.filter((s) => s.name.toLowerCase() !== name.toLowerCase());
     setSavedLocations(filtered);
+    saveLocationsToFirestore(filtered);
     if (filtered.length > 0) setSelectedLoc(filtered[0]);
   };
 
@@ -103,7 +134,7 @@ export default function DashboardPage() {
               <span>Personal Weather Dashboard</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Manage saved locations, sync severe weather alert notifications, and configure Pro API provider keys
+              Manage saved locations and sync severe weather alert notifications and custom threshold preferences
             </p>
           </div>
 
@@ -220,34 +251,6 @@ export default function DashboardPage() {
                     );
                   })}
                 </div>
-              </div>
-
-              {/* Pro Tier API Key Config Box */}
-              <div className="rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900 shadow-sm p-5 space-y-3">
-                <div className="flex items-center gap-2">
-                  <Key className="h-4 w-4 text-amber-500" />
-                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-900 dark:text-white">
-                    Pro API Key Custom Override
-                  </h3>
-                </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Supply your personal OpenWeatherMap or WeatherAPI secret key for unlimited high-frequency calls.
-                </p>
-
-                <input
-                  type="password"
-                  value={customKey}
-                  onChange={(e) => setCustomKey(e.target.value)}
-                  placeholder="Enter custom API key..."
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-
-                <button
-                  onClick={() => setKeySaved(true)}
-                  className="w-full py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm"
-                >
-                  {keySaved ? 'Saved to Profile ✓' : 'Save Custom Key'}
-                </button>
               </div>
             </div>
 

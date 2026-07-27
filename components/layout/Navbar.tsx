@@ -9,14 +9,10 @@ import {
   MapPin, 
   Wind, 
   Layers, 
-  User, 
   ShieldAlert, 
   Menu, 
   X,
-  Compass,
-  Settings,
-  LogOut,
-  Sparkles
+  LogOut
 } from 'lucide-react';
 import { onAuthStateChanged, logoutUser, UserProfile, syncUserProfile } from '../../lib/firebase/auth';
 import { auth } from '../../lib/firebase/client';
@@ -61,7 +57,6 @@ export default function Navbar() {
     { href: '/forecast', label: '10-Day Forecast', icon: CloudRain },
     { href: '/radar', label: 'Live Radar', icon: Layers },
     { href: '/air-quality', label: 'Air Quality', icon: Wind },
-    { href: '/integrations', label: 'Data Sources', icon: Compass },
   ];
 
   return (

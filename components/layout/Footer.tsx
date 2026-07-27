@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { CloudRain, Github, Twitter, Heart, Shield, Globe } from 'lucide-react';
+import { CloudRain, Heart, Shield, Globe } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -33,7 +33,6 @@ export default function Footer() {
               <li><Link href="/forecast" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">10-Day & Hourly Forecast</Link></li>
               <li><Link href="/radar" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Interactive Weather Radar</Link></li>
               <li><Link href="/air-quality" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Air Quality & Pollen Index</Link></li>
-              <li><Link href="/integrations" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Weather API Data Sources</Link></li>
             </ul>
           </div>
 
@@ -42,7 +41,7 @@ export default function Footer() {
             <h4 className="font-semibold text-slate-900 dark:text-white text-xs uppercase tracking-wider">Account & Help</h4>
             <ul className="space-y-2 text-xs">
               <li><Link href="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Saved Locations</Link></li>
-              <li><Link href="/settings" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Preferences & Units</Link></li>
+              <li><Link href="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Preferences & Alerts</Link></li>
               <li><Link href="/about" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About My Weather</Link></li>
               <li><Link href="/contact" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact Support</Link></li>
             </ul>
