@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchOpenMeteoWeather } from '../../../lib/api/openMeteo';
+import { fetchWeatherWithLoadBalancer } from '../../../lib/api/loadBalancer';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const lon = parseFloat(lonStr);
 
   try {
-    const data = await fetchOpenMeteoWeather(lat, lon, name, country);
+    const { data } = await fetchWeatherWithLoadBalancer(lat, lon, name, country);
     return NextResponse.json({ weather: data });
   } catch (error: any) {
     console.error('Forecast API error:', error);

@@ -112,12 +112,30 @@ export function deleteApiKeyRecord(id: string): void {
   inMemoryKeys = inMemoryKeys.filter((k) => k.id !== id);
 }
 
+export function checkIfAllApisDisabled(): boolean {
+  if (inMemoryKeys.length > 0 && inMemoryKeys.every((k) => k.status === 'disabled')) {
+    return true;
+  }
+  const activeKeys = inMemoryKeys.filter(
+    (k) =>
+      k.status === 'active' &&
+      (k.provider === 'openmeteo' || (k.key && k.key.trim().length > 0)) &&
+      k.callsToday < k.dailyLimit
+  );
+  return activeKeys.length === 0;
+}
+
 export async function fetchWeatherWithLoadBalancer(
   lat: number,
   lon: number,
   locationName: string = 'Current Location',
   countryName: string = ''
 ): Promise<{ data: WeatherData; providerUsed: string }> {
+  // Check if all APIs are disabled by admin
+  if (checkIfAllApisDisabled()) {
+    throw new Error('All weather APIs are currently disabled by the admin. Please enable APIs in the Admin Dashboard to view data.');
+  }
+
   // Reset key counters if 24 hours have passed since resetAt
   const now = new Date();
   inMemoryKeys.forEach((key) => {
@@ -187,7 +205,5 @@ export async function fetchWeatherWithLoadBalancer(
     }
   }
 
-  // Universal default fallback: Open-Meteo (Unlimited, Zero-Config)
-  const defaultData = await fetchOpenMeteoWeather(lat, lon, locationName, countryName);
-  return { data: defaultData, providerUsed: 'Open-Meteo (Unlimited Zero-Config Fallback)' };
+  throw new Error('All weather APIs are currently disabled or exhausted by the admin. Please enable APIs in the Admin Dashboard.');
 }

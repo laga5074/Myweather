@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchAirQuality } from '../../../lib/api/openMeteo';
+import { checkIfAllApisDisabled } from '../../../lib/api/loadBalancer';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -10,6 +11,9 @@ export async function GET(req: NextRequest) {
   const lon = parseFloat(lonStr);
 
   try {
+    if (checkIfAllApisDisabled()) {
+      throw new Error('All weather APIs are currently disabled by the admin. Please enable APIs in the Admin Dashboard to view data.');
+    }
     const data = await fetchAirQuality(lat, lon);
     return NextResponse.json({ airQuality: data });
   } catch (error: any) {

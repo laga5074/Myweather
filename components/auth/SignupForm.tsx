@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, User, UserPlus, AlertCircle } from 'lucide-react';
-import { createUserWithEmailAndPassword, syncUserProfile } from '../../lib/firebase/auth';
+import { createUserWithEmailAndPassword, syncUserProfile, updateProfile } from '../../lib/firebase/auth';
 import { auth } from '../../lib/firebase/client';
 import SocialAuthButtons from './SocialAuthButtons';
 
@@ -23,6 +23,9 @@ export default function SignupForm() {
 
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
+      if (displayName.trim()) {
+        await updateProfile(res.user, { displayName: displayName.trim() });
+      }
       await syncUserProfile(res.user);
       router.push('/dashboard');
     } catch (err: any) {
